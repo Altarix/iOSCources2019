@@ -22,7 +22,7 @@
 
 * Исходный код необходимо хранить в открытом репозиторие на [github](https://github.com) или [bitbucket](https://bitbucket.org/)
 * Код необходимо оформлять согласно [guidlines от Apple](https://swift.org/documentation/api-design-guidelines/#fundamentals). Больше правил и описания вы найдете [здесь](https://google.github.io/swift/)
-* Дизайн вашего решения лучше оформлять согласно Human [Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines/)
+* Дизайн вашего решения лучше оформлять согласно [Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines/)
 * Пример кода:
 ```swift
 class InputController: BxInputController {
@@ -46,7 +46,7 @@ class InputController: BxInputController {
         guard let productId = self.productId else {
             return
         }
-        guard let product = products.first{ $0.id == productId } {
+        if let product = products.first{ $0.id == productId } {
             print(product.name)
         }
     }
