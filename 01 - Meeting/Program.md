@@ -1,23 +1,23 @@
 ## План занятия
 
-• Типы данных
-    o Структура
+* Типы данных
+    - Структура
         - String (Character), Int (UInt), Float, Double, Array, Set, Dictionary, Bool
-    o Класс 
-    o Enum
+    - Класс 
+    - Enum
         - Опционалы
-    o Tuple
-    o Функции (Замыкания)
-    o Протокол
-• Управление потоком
-    o Циклы
+    - Tuple
+    - Функции (Замыкания)
+    - Протокол
+* Управление потоком
+    - Циклы
         - For in
         - While
         - While repeat
-    o Условные инструкции
+    - Условные инструкции
         - If
         - Switch case
-    o Операторы управления
+    - Операторы управления
         - Return
         - Break
         - Fallthrough
@@ -120,16 +120,16 @@ func printSpiralMatrixWithSize(size: Int) {
 ```
 ## Домашнее задание
 
-• Создать Apple ID
-• Установить образ MacOs Mojave (в худшем случае High Sierra)
-• Установить Xcode последней для MacOS версии
-• Попробовать сделать тестовое задание на курсы в Playground
-• Создать GitHub аккаунт
-• Прочитать SwiftBook до конца(!)
+* Создать Apple ID
+* Установить образ MacOs Mojave (в худшем случае High Sierra)
+* Установить Xcode последней для MacOS версии
+* Попробовать сделать тестовое задание на курсы в Playground
+* Создать GitHub аккаунт
+* Прочитать SwiftBook до конца(!)
 
 ## Материалы лекции
 
-• [Официальный сайт языка Swift](https://swift.org)
-• [Сайт Swiftbook](https://swiftbook.ru)
-• [Создать Apple ID](https://appleid.apple.com/)
-• [Установка MacOS на виртуальную машину](https://brofox86.github.io/macos-plus/ustanovka-macos-na-virtualnuyu-mashinu.html)
+* [Официальный сайт языка Swift](https://swift.org)
+* [Сайт Swiftbook](https://swiftbook.ru)
+* [Создать Apple ID](https://appleid.apple.com/)
+* [Установка MacOS на виртуальную машину](https://brofox86.github.io/macos-plus/ustanovka-macos-na-virtualnuyu-mashinu.html)
