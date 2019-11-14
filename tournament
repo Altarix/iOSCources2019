@@ -1,0 +1,269 @@
+/*
+Реализовать в программе логику проведения футбольного (или любого другого) турнира в соответствии со следующими требованиями:
+Генерируются 12 случайных команд. Команда имеет название и позицию в рейтинге.
+
+Программа генерирует расписание турнира так, чтобы каждая команда сыграла со всеми другими дважды. 
+Расписание представляет собой список строк, вида "(команда 1) vs. (команда 2): (очки первой команды)-(очки второй команды). День: (номер дня)."
+Расписание должно соответствовать следующим требованиям:
+в один день не может быть более двух матчей;
+одна и та же команда не может играть два дня подряд;
+результаты матчей определяются случайно (очки команды в диапазоне [0, 7]).
+Должна быть возможность запросить рейтинговую таблицу команд на любой из матчевых дней, вывести расписание всех сыгранных матчей вплоть до определенного дня
+Программа должна отдельно выводить тройку призеров и их счет на последний день турнира. Если на момент окончания турнира на первых местах команды с одинаковым числом очков, то их порядок определяется по алфавиту (по названию команды).
+*/
+
+struct Tournament {
+    
+    //Объявляем struct для каждой команды
+    struct Team {
+        let name: String
+        let number: Int
+        var wins: Int = 0
+        var draws: Int = 0
+        var losses: Int = 0
+
+        init(number: Int, name: String) {
+            self.name = name
+            self.number = number
+        }
+
+        var points: Int {
+            return wins * 3 + draws
+        }
+        var matchesPlayed: Int {
+            return wins + draws + losses
+        }
+     }
+
+// Структура TeamList генерит имена команд list и выдает в массив [Team], где индекс массива - [номер команды - 1]
+// Также она генерит расписание команд по алгоритму Round Robin в параметр schedule
+    
+    struct TeamList {
+        let countOfTeams: Int
+        var list: Array<Team> {
+            get {
+                return teamListGeneration(countOfTeams)
+            }
+        }
+        
+        var schedule: [[Int]] {
+            get {
+                return scheduleGeneration()
+            }
+        }
+        
+        func randomNameGenerate(_ length: Int) -> String {
+             let letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+             return String((0..<length).map{ _ in letters.randomElement()! })
+           }
+                   
+        func teamListGeneration(_ number: Int) -> Array<Team> {
+             //print("Generation Teams Name")
+             var teamListTemp = [Team]()
+             for number in 1...countOfTeams {
+                   teamListTemp.append(Team(number: number, name: randomNameGenerate(7)))
+                   //print("Team №\(number) is \(teamListTemp[number-1].name)")
+             }
+             return teamListTemp
+             }
+        
+        //  Функция генерации расписания матчей по алгоритму Round Robin
+        
+        func scheduleGeneration () -> [[Int]] {
+            let n = 12 // количество команд
+
+            var tournamentTable = Array(repeating: Array(repeating: Array(repeating: 0, count: 2), count: n / 2), count: n - 1)
+            var teamPairs = [Int]()
+
+            for r in 1..<n {
+                teamPairs.append(1)
+                teamPairs.append(r + 1)
+                tournamentTable[r - 1][0] = teamPairs
+                teamPairs = []
+                    for i in 2...(n/2) {
+                        teamPairs.append((r+i-2) % (n-1) + 2)
+                        teamPairs.append((n-1+r-i) % (n-1) + 2)
+                        tournamentTable[r-1][i-1] = teamPairs
+                        teamPairs = []
+            }
+            }
+
+        //из полученного массива составляем расписание игр
+
+            var tournamentSchedule = [[Int]]()
+            for y in 0..<tournamentTable.count {
+                for x in 0..<tournamentTable[y].count {
+                    tournamentSchedule.append(tournamentTable[y][x])
+                
+            }
+            }
+
+        // удвоим таблицу, так как каждая команда должна сыграть с другой дважды, поэтому у нас расписание матчей просто второй раз повторится
+
+        return tournamentSchedule + tournamentSchedule
+        }
+        
+        
+        init(_ count: Int) {
+            self.countOfTeams = count
+        }
+        
+    }
+
+// Объявляем переменную teamList - это итоговый список команд, который дальше будем использовать.
+    
+    var teamList = TeamList(12).list
+
+// Составляем расписание и присваиваем переменной
+    
+    let schedule = TeamList(12).schedule
+
+// Создаëм структуру MatchDay, в которую будут записываться результаты каждого дня + сохраняться таблица результатов
+    struct MatchDay {
+        let day: Int
+        let teamplaying: (Int, Int)
+        let teamscore: (Int, Int)
+        //сохраняем статистику каждой команды
+        let teams: Array<Team>
+        //генерим нулевую таблицу результатов
+        var tournamentTable = Array(repeating: 0, count: 12)
+        
+               
+        init(day: Int, teamplaying: (Int, Int), teamscore: (Int, Int), teams: Array<Team>){
+            self.day = day
+            self.teamplaying = teamplaying
+            self.teamscore = teamscore
+            self.teams = teams
+        }
+}
+
+// Стартуем чемпионат
+    //объявляем пустой с массивом результатов по каждому дню
+    
+    var matchDayResult = Array<MatchDay>()
+    
+    
+    mutating func start(){
+        
+        for day in 1...schedule.count {
+            let team1score = Int.random(in: 0...7)
+            let team2score = Int.random(in: 0...7)
+                      
+            
+            if team1score == team2score {
+                teamList[schedule[day - 1][0] - 1].draws += 1
+                teamList[schedule[day - 1][1] - 1].draws += 1
+            }
+            if team1score > team2score {
+                teamList[schedule[day - 1][0] - 1].wins += 1
+                teamList[schedule[day - 1][1] - 1].losses += 1
+            } else {
+                teamList[schedule[day - 1][0] - 1].losses += 1
+                teamList[schedule[day - 1][1] - 1].wins += 1
+            }
+           
+            
+            var matchDaytmp = MatchDay(day: day, teamplaying: (schedule[day - 1][0], schedule[day - 1][1]), teamscore: (team1score, team2score), teams: teamList)
+            
+            for team in 1...teamList.count {
+                matchDaytmp.tournamentTable[team - 1] = teamList[team - 1].points
+            }
+            
+            matchDayResult.append(matchDaytmp)
+            
+            //print(matchDaytmp.tournamentTable)
+        }
+        
+        //matchDayResult.forEach{print("Day №\($0.day), Team\($0.teamplaying) and they score\($0.teamscore)")}
+    }
+    
+    func sortTeams(_ teams: [Team]) -> [Team] {
+        let sorted = teams.sorted { team1, team2 -> Bool in
+            if team1.points == team2.points {
+                if team1.wins == team2.wins {
+                    return team1.name < team2.name
+                } else {
+                    return team1.wins > team2.wins
+                }
+            } else {
+                return team1.points > team2.points
+            }
+        }
+
+        return sorted
+    }
+    
+    func printable(_ day: Int) {
+        guard day > 0 && day < schedule.count else {return print("Day out of range")}
+        var teams = matchDayResult[day - 1].teams
+        teams = sortTeams(teams)
+        
+        print("Rating table in \(day)th day")
+        var result = "Team      | MP |  W |  D |  L |  P"
+
+        for team in teams {
+                 let name = team.name
+                 result += "\n\(name)"
+                 let numberOfSpaces = 10 - name.count
+                 for _ in 1...numberOfSpaces {
+                     result += " "
+                 }
+                 result += "|  \(team.matchesPlayed) |  \(team.wins) |  \(team.draws) |  \(team.losses) |  \(team.points)"
+             }
+        print(result)
+    }
+
+    func printSchedule(_ day: Int) {
+        guard day > 0 && day < schedule.count else {return print("Day out of range")}
+        for days in 0..<day {
+            let currentDayResults = matchDayResult[days]
+            
+            print("\(teamList[currentDayResults.teamplaying.0 - 1].name) vs \(teamList[currentDayResults.teamplaying.1 - 1].name): \(currentDayResults.teamscore.0) - \(currentDayResults.teamscore.0). Day: \(days + 1)th")
+            //print("Team1 \(teamList[currentDayResults.teamplaying.0 - 1].name) vs Team2: 1 - 2. Day: \(days + 1)th")
+        }
+    }
+    
+    func printwinners(){
+        var teams = matchDayResult.last!.teams
+        teams = sortTeams(teams)
+        print("Winners of tournament")
+        var result = "Team      | MP |  W |  D |  L |  P"
+              
+        for i in 0...2 {
+                 let name = teams[i].name
+                 result += "\n\(name)"
+                 let numberOfSpaces = 10 - name.count
+                 for _ in 1...numberOfSpaces {
+                     result += " "
+                 }
+                 result += "|  \(teams[i].matchesPlayed) |  \(teams[i].wins) |  \(teams[i].draws) |  \(teams[i].losses) |  \(teams[i].points)"
+             }
+        print(result)
+        
+        
+    }
+    
+}
+
+// Создаем лист с командами и составляем расписание турнира
+var tournament = Tournament()
+
+// Проводим чемпионат
+tournament.start()
+
+// Запрашиваем расписание матчей. Расписание представляет собой список строк, вида "(команда 1) vs. (команда 2): (очки первой команды)-(очки второй команды). День: (номер дня).
+print("-------")
+tournament.printSchedule(5)
+
+
+//Запрашиваем рейтинговую таблицу команд на определенный день
+print("-------")
+tournament.printable(15)
+
+// Выводим результаты победителя и призеров турнира
+print("-------")
+tournament.printwinners()
+
+
+
+
